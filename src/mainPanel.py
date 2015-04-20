@@ -12,6 +12,11 @@ class RobotView(glcanvas.GLCanvas):
         hBox = wx.BoxSizer(wx.HORIZONTAL)
         hBox.Add(self, 1, flag = wx.EXPAND)
         parent.SetSizer(hBox)
+
+        parent.Bind(wx.EVT_SET_FOCUS, self.OnParentFocus)
+
+        self.parent = parent
+
         self.init = False
         self.context = glcanvas.GLContext(self)
         
@@ -41,6 +46,8 @@ class RobotView(glcanvas.GLCanvas):
         self.Bind(wx.EVT_MOTION, self.OnMouseMotion)
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnWheel)
 
+        self.SetFocus()
+
     def applyRotation(self):
         if self.ZYROT :
             glRotatef(self.ZROTANG, 0.0, 0.0, 1.0)
@@ -65,6 +72,9 @@ class RobotView(glcanvas.GLCanvas):
             self.cameraDistance -= 2
         self.cameraMoved = True
         self.Refresh(False)
+
+    def OnParentFocus(self):
+        print 'focus'
 
     def moveCamera(self):
         glMatrixMode(GL_MODELVIEW)
@@ -112,6 +122,7 @@ class RobotView(glcanvas.GLCanvas):
 
     def OnMouseDown(self, evt):
         self.CaptureMouse()
+        wx.CallAfter(self.SetFocus)
         self.ROTXY.append(evt.GetPosition())
         # self.x, self.y = self.lastx, self.lasty = evt.GetPosition()
 
@@ -169,6 +180,10 @@ class RobotView(glcanvas.GLCanvas):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         self.drawWorldAxes()
         self.drawCube()
+        glPushMatrix()
+        glTranslatef(10.0, 0.0, 0.0)
+        glutSolidSphere(0.5,20,20)
+        glPopMatrix()
         self.SwapBuffers()
 
     def drawCube(self):
