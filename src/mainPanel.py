@@ -3,7 +3,7 @@ import math
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
-import gridPlane
+import Plane
 import wx
 import axis
 
@@ -29,7 +29,7 @@ class RobotView(glcanvas.GLCanvas):
         # self.projection = Projection(30.0, 0.1, 20)
 
         self.worldAxis  = axis.WorldAxis()
-        self.plane      = gridPlane.GridPlane(16, 16)
+        self.plane      = Plane.GridPlane(16, 16)
 
         self.SELECTVXYZ = []    # Selection volume vertex coordinates array
         self.ROTXY      = []    # Rotation mouse x and y values
