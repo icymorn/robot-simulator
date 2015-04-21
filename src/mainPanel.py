@@ -3,7 +3,9 @@ import math
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
+import gridPlane
 import wx
+import axis
 
 
 class RobotView(glcanvas.GLCanvas):
@@ -25,6 +27,9 @@ class RobotView(glcanvas.GLCanvas):
         self.resizeNeeded = True
         self.cameraMoved = True
         # self.projection = Projection(30.0, 0.1, 20)
+
+        self.worldAxis  = axis.WorldAxis()
+        self.plane      = gridPlane.GridPlane(16, 16)
 
         self.SELECTVXYZ = []    # Selection volume vertex coordinates array
         self.ROTXY      = []    # Rotation mouse x and y values
@@ -48,20 +53,11 @@ class RobotView(glcanvas.GLCanvas):
 
         self.SetFocus()
 
-    def applyRotation(self):
-        if self.ZYROT :
-            glRotatef(self.ZROTANG, 0.0, 0.0, 1.0)
-            glRotatef(self.YROTANG, 0.0, 1.0, 0.0)
-        else :
-            glRotatef(self.XROTANG, 1.0, 0.0, 0.0)
-            glRotatef(self.YROTANG, 0.0, 1.0, 0.0)
-
     def OnEraseBackground(self, event):
-        pass # Do nothing, to avoid flashing on MSW.
+        pass
 
     def OnSize(self, event):
         self.resizeNeeded = True
-        # wx.CallAfter(self.DoSetViewport)
         event.Skip()
 
     def OnWheel(self, event):
@@ -79,14 +75,6 @@ class RobotView(glcanvas.GLCanvas):
     def moveCamera(self):
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
-        # gluLookAt(
-        #     math.cos(self.cameraVerticalAngle) * math.cos(self.cameraHorizonalAngle) * self.cameraDistance,
-        #     math.sin(self.cameraVerticalAngle) * self.cameraDistance,
-        #     math.cos(self.cameraVerticalAngle) * math.sin(self.cameraHorizonalAngle) * self.cameraDistance,
-        #     0,
-        #     0,
-        #     0,
-        #     0.0, 10.0, 0.0)
         gluLookAt(
             self.originalPoint[0] + math.cos(self.cameraVerticalAngle) * math.cos(self.cameraHorizonalAngle) * self.cameraDistance,
             self.originalPoint[1] + math.sin(self.cameraVerticalAngle) * self.cameraDistance,
@@ -94,7 +82,7 @@ class RobotView(glcanvas.GLCanvas):
             self.originalPoint[0],
             self.originalPoint[1],
             self.originalPoint[2],
-            0.0, 10.0, 0.0)
+            0.0, 0.0, 18.0)
 
     def DoSetViewport(self):
         glMatrixMode(GL_PROJECTION)
@@ -107,7 +95,6 @@ class RobotView(glcanvas.GLCanvas):
         self.moveCamera()
 
     def OnPaint(self, event):
-        # dc = wx.PaintDC(self)
         self.SetCurrent(self.context)
         if not self.init:
             self.InitGL()
@@ -124,7 +111,6 @@ class RobotView(glcanvas.GLCanvas):
         self.CaptureMouse()
         wx.CallAfter(self.SetFocus)
         self.ROTXY.append(evt.GetPosition())
-        # self.x, self.y = self.lastx, self.lasty = evt.GetPosition()
 
     def OnMouseUp(self, evt):
         self.ReleaseMouse()
@@ -143,8 +129,8 @@ class RobotView(glcanvas.GLCanvas):
             dx = float(mx - self.ROTXY[0][0])
             dy = float(my - self.ROTXY[0][1])
             # Calculate rotation as 180 degrees per width and height
-            self.cameraHorizonalAngle -= dx * 0.01
-            self.cameraVerticalAngle += dy * 0.01
+            self.cameraHorizonalAngle -= dy * 0.01
+            self.cameraVerticalAngle -= dx * 0.01
             self.ROTXY[0] = (mx, my)
             self.cameraMoved = True
             self.Refresh(False)
@@ -182,13 +168,12 @@ class RobotView(glcanvas.GLCanvas):
         self.drawCube()
         glPushMatrix()
         glTranslatef(10.0, 0.0, 0.0)
-        glutSolidSphere(0.5,20,20)
+        glutSolidSphere(0.5, 20, 20)
         glPopMatrix()
         self.SwapBuffers()
 
     def drawCube(self):
         glPushMatrix()
-        # self.applyRotation()
         glTranslatef(-2.0, 0.0, 0.0)
         glMaterialfv(GL_FRONT, GL_AMBIENT, [0.1745, 0.0, 0.1, 0.0])
         glMaterialfv(GL_FRONT, GL_DIFFUSE, [0.6, 0.0, 0.1, 0.0])
@@ -198,33 +183,8 @@ class RobotView(glcanvas.GLCanvas):
         glPopMatrix()
 
     def drawWorldAxes(self):
-        glPushMatrix()
-        # self.applyRotation()
-        glColor3f(0.0, 1.0, 0.0)
-        glMaterialfv(GL_FRONT, GL_EMISSION, [0.0, 1.0, 0.0, 1.0])
-        glBegin(GL_LINES)
-        glVertex3f( 0.0, 0.0, 0.0)
-        glVertex3f( 0.8, 0.0, 0.0) # X-axis
-        glVertex3f( 0.0, 0.0, 0.0)
-        glVertex3f( 0.0, 0.8, 0.0) # Y-axis
-        glVertex3f( 0.0, 0.0, 0.0)
-        glVertex3f( 0.0, 0.0, 0.8) # Z-axis
-        glEnd()
-        glBegin(GL_LINE_STRIP) # letter Z
-        glVertex3f(-0.1, 0.1, 1.0)
-        glVertex3f( 0.1, 0.1, 1.0)
-        glVertex3f(-0.1,-0.1, 1.0)
-        glVertex3f( 0.1,-0.1, 1.0)
-        glEnd()
-        glRotatef(-self.YROTANG, 0.0, 1.0, 0.0)
-        glBegin(GL_LINE_STRIP) # letter Y
-        glVertex3f(-0.1, 1.2, 0.0)
-        glVertex3f( 0.0, 1.1, 0.0)
-        glVertex3f( 0.0, 1.0, 0.0)
-        glVertex3f( 0.0, 1.1, 0.0)
-        glVertex3f( 0.1, 1.2, 0.0)
-        glEnd()
-        glPopMatrix()
+        self.worldAxis.draw()
+        self.plane.draw()
 
 if __name__ == '__main__':
     app = wx.App()

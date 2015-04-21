@@ -98,7 +98,7 @@ class SampleSelectObj:
                 minimumzdepth, maximumzdepth -- 0.0 to 1.0 corresponding to
                   depth from near to far planes of viewing volume frustum
                   If you want physical depth, multiply that by the frustum 
-                  depth and add your near clipping plane.  This is valid only
+                  depth and add your near clipping plane.py.  This is valid only
                   for orthographic projections since depth values are non-
                   linear for perspective projectons.
                 name -- the names (integers) used in calls to glPushName(int)
@@ -159,7 +159,7 @@ class SampleSelectObj:
             glPopMatrix()
     
     def getSelectVolume(self, n, mx, my):
-        """ Gets the near plane and far plane world space coordinates
+        """ Gets the near plane.py and far plane.py world space coordinates
             of the clip volume corresponding to the pick box centered 
             about the mouse cursor coordinates in the viewport. 
         """

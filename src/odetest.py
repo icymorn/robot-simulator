@@ -260,7 +260,7 @@ world.setCFM(1E-5)  # constraint force mixing
 # create a space object ( a collision space)
 space = ode.Space()
 
-# create a plane geom for the floor (infinite plane)
+# create a plane.py geom for the floor (infinite plane.py)
 floor = ode.GeomPlane(space, (0,1,0), 0)
 
 # a list with ODE bodies ( a body is a rigid body )
@@ -322,7 +322,7 @@ def _drawfunc():
     for b in bodies:
         draw_body(b)
 
-    # we construct the normal for each axis plane and the
+    # we construct the normal for each axis plane.py and the
     #  vector from the center of the ball to the center of the stick
     axis_of_balance = sub3d( bodies[1].getPosition(), bodies[0].getPosition())
     normal1 = cross( j1.getAxis2(), axis_of_balance)
