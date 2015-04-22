@@ -1,6 +1,6 @@
 # robot arm simulator
 robot_arm:
-  - { theta: 0, d: 0.3, r: 10, alpha: 0}
-  - { theta: 45, d: 0.2, r: 0.3, alpha: 90}
-  - { theta: 45, d: 0.2, r: 0.3, alpha: 0}
-  - { theta: 45, d: 0.2, r: 0.3, alpha: 0}
+  - { theta: 0, d: 0.3, r: 0.3, alpha: 0}
+  - { theta: 45, d: 0, r: 0.3, alpha: 90}
+  - { theta: 45, d: 0, r: 0.3, alpha: 0}
+  - { theta: 45, d: 0, r: 0.3, alpha: 0}

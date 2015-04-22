@@ -26,7 +26,7 @@ class DHMatrix:
         sinAlpha = sin(self.alpha)
         cosAlpha = cos(self.alpha)
         return np.mat([
-            [cosTheta, -sinTheta * cosAlpha, sinTheta * cosAlpha , self.r * cosTheta],
+            [cosTheta, -sinTheta * cosAlpha, sinTheta * sinAlpha , self.r * cosTheta],
             [sinTheta, cosTheta * cosAlpha , -cosTheta * sinAlpha, self.r * sinTheta],
             [0       , sinAlpha            , cosAlpha            , self.d],
             [0       , 0                   , 0                   , 1]
@@ -67,6 +67,8 @@ if __name__ == '__main__':
     m1 = DHMatrix(0, 0.3, 0, 90)
     m2 = DHMatrix(45, 0.2, 0.3, 0)
     m3 = DHMatrix(45, 0.2, 0.3, 0)
-    print base.transform() * m1.transform()
-    print m1.transform() * m2.transform()
-    print m1.transform() * m2.transform() * m3.transform()
+    # print base.transform() * m1.transform()
+    # print m1.transform() * m2.transform()
+    m = m1.transform() * m2.transform() * m3.transform()
+    print m
+    print m[0,3]

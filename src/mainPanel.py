@@ -26,16 +26,15 @@ class RobotView(glcanvas.GLCanvas):
         self.size = None
         self.resizeNeeded = True
         self.cameraMoved = True
-        # self.projection = Projection(30.0, 0.1, 20)
 
-        self.worldAxis  = axis.WorldAxis()
+        self.worldAxis  = axis.WorldAxis(-2, -2, 0)
         self.plane      = Plane.GridPlane(16, 16)
 
         self.object     = robotArm.robotArm()
 
         self.SELECTVXYZ = []    # Selection volume vertex coordinates array
-        self.ROTXY      = []    # Rotation mouse x and y values
-        self.ZYROT      = 1     # Rotation mode (0=XY, 1=ZY)
+        self.cameraRotate      = []    # Rotation mouse x and y values
+        self.cameraMotion      = []    # Rotation mode (0=XY, 1=ZY)
 
         self.cameraDistance = 10
         self.cameraHorizonalAngle = 0.0
@@ -45,8 +44,13 @@ class RobotView(glcanvas.GLCanvas):
         self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
         self.Bind(wx.EVT_SIZE, self.OnSize)
         self.Bind(wx.EVT_PAINT, self.OnPaint)
+
+        self.Bind(wx.EVT_RIGHT_DOWN, self.OnRightMouseDown)
+        self.Bind(wx.EVT_RIGHT_UP, self.OnRightMouseUp)
+
         self.Bind(wx.EVT_LEFT_DOWN, self.OnMouseDown)
         self.Bind(wx.EVT_LEFT_UP, self.OnMouseUp)
+
         self.Bind(wx.EVT_MOTION, self.OnMouseMotion)
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnWheel)
 
@@ -69,7 +73,7 @@ class RobotView(glcanvas.GLCanvas):
         self.Refresh(False)
 
     def OnParentFocus(self):
-        print 'focus'
+        pass
 
     def moveCamera(self):
         glMatrixMode(GL_MODELVIEW)
@@ -109,31 +113,59 @@ class RobotView(glcanvas.GLCanvas):
     def OnMouseDown(self, evt):
         self.CaptureMouse()
         wx.CallAfter(self.SetFocus)
-        self.ROTXY.append(evt.GetPosition())
+        self.cameraRotate.append(evt.GetPosition())
 
     def OnMouseUp(self, evt):
         self.ReleaseMouse()
-        self.ROTXY = []
+        self.cameraRotate = []
+
+    def OnRightMouseUp(self, evt):
+        self.ReleaseMouse()
+        self.cameraMotion = []
 
     def OnMouseMotion(self, evt):
-    #     if evt.Dragging() and evt.LeftIsDown():
-    #         self.lastx, self.lasty = self.x, self.y
-    #         self.x, self.y = evt.GetPosition()
-    #         self.Refresh(False)
-        if self.ROTXY and evt.LeftIsDown():
+        if self.cameraRotate and evt.LeftIsDown():
             viewport = glGetIntegerv(GL_VIEWPORT)
             mx, my = evt.GetPosition()
             w  = viewport[2] - viewport[0]
             h  = viewport[3] - viewport[1]
-            dx = float(mx - self.ROTXY[0][0])
-            dy = float(my - self.ROTXY[0][1])
+            dx = float(mx - self.cameraRotate[0][0])
+            dy = float(my - self.cameraRotate[0][1])
             # Calculate rotation as 180 degrees per width and height
             self.cameraHorizonalAngle -= dy * 0.01
             self.cameraVerticalAngle -= dx * 0.01
-            self.ROTXY[0] = (mx, my)
+            self.cameraRotate[0] = (mx, my)
             self.cameraMoved = True
             self.Refresh(False)
-            # glutPostRedisplay()
+        elif self.cameraMotion and evt.RightIsDown():
+            viewport = glGetIntegerv(GL_VIEWPORT)
+            mx, my = evt.GetPosition()
+            w  = viewport[2] - viewport[0]
+            h  = viewport[3] - viewport[1]
+            dx = float(mx - self.cameraMotion[0][0])
+            dy = float(my - self.cameraMotion[0][1])
+            # Calculate rotation as 180 degrees per width and height
+            u = self.originalPoint[0] + math.cos(self.cameraVerticalAngle) * math.cos(self.cameraHorizonalAngle) * self.cameraDistance
+            v = self.originalPoint[1] + math.sin(self.cameraVerticalAngle) * self.cameraDistance
+            w = self.originalPoint[2] - math.cos(self.cameraVerticalAngle) * math.sin(self.cameraHorizonalAngle) * self.cameraDistance
+            dis = math.sqrt(u**2 + v**2)
+            du = u / dis
+            dv = v / dis
+            # print (du, dv)
+            if w > 0:
+                self.originalPoint[1] -= dv * dy * 0.01
+                self.originalPoint[0] += du * dx * 0.01
+            else:
+                self.originalPoint[1] -= dv * dx * 0.01
+                self.originalPoint[0] += du * dy * 0.01
+            self.cameraMotion[0] = (mx, my)
+            self.cameraMoved = True
+            self.Refresh(False)
+
+    def OnRightMouseDown(self, evt):
+            self.CaptureMouse()
+            wx.CallAfter(self.SetFocus)
+            self.cameraMotion = [evt.GetPosition()]
 
     def InitGL( self ):
         glMatrixMode(GL_PROJECTION)
@@ -156,19 +188,47 @@ class RobotView(glcanvas.GLCanvas):
         # position viewer
         glMatrixMode(GL_MODELVIEW)
         # position viewer
-        glTranslatef(0.0, 0.0, -2.0)
+        # glTranslatef(0.0, 0.0, 0.0)
+        t = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+        glLoadMatrixd(t)
+        # mat_specular = [ 1.0, 1.0, 1.0, 1.0]
+        # mat_shininess = [ 25.0]
+        # light_position = [ 20.0, 20.0, 20.0, 0.0]
+        # white_light = [ 1, 1, 1, 1.0 ]
         #
+        # glClearColor(0.8,0.8,1.0,1.0)
+        # glClearDepth(10.0)
+        # glShadeModel(GL_SMOOTH)
+        # glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular)
+        # glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess)
+        # glLightfv(GL_LIGHT0, GL_POSITION, light_position)
+        # glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light)
+        # glLightfv(GL_LIGHT0, GL_SPECULAR, white_light)
+
+        # glEnable(GL_LIGHTING)
+        # glEnable(GL_NORMALIZE)
+        # glEnable(GL_LIGHT0)
+        # glEnable(GL_DEPTH_TEST)
+        # glEnable(GL_TEXTURE_2D)
+        # glEnable(GL_CULL_FACE)
+        # # glEnable(GL_FOG)
+        # glDepthMask(GL_TRUE)
+        # glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
+
+        # fogColor= [0.8, 0.8, 1.0, 1.0]
+        # glFogi(GL_FOG_MODE, GL_LINEAR)
+        # glFogfv(GL_FOG_COLOR, fogColor)
+        # glFogf(GL_FOG_DENSITY, 0.3)
+        # glHint(GL_FOG_HINT, GL_DONT_CARE)
+        # glFogf(GL_FOG_START,10.0)
+        # glFogf(GL_FOG_END, 40.0)
         glutInit()
         # glutInit(sys.argv)
 
     def OnDraw(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         self.drawWorldAxes()
-        self.drawCube()
-        # glPushMatrix()
-        # glTranslatef(10.0, 0.0, 0.0)
-        # glutSolidSphere(0.5, 20, 20)
-        # glPopMatrix()
+        # self.drawCube()
         self.object.draw()
         self.SwapBuffers()
 
@@ -176,10 +236,6 @@ class RobotView(glcanvas.GLCanvas):
         glPushMatrix()
         glTranslatef(-2.0, 0.0, 0.0)
         glColor3f(1.0, 0.0, 0.0)
-        # glMaterialfv(GL_FRONT, GL_AMBIENT, [0.1745, 0.0, 0.1, 0.0])
-        # glMaterialfv(GL_FRONT, GL_DIFFUSE, [1.0, 0.0, 0.0, 1.0])
-        # glMaterialfv(GL_FRONT, GL_SPECULAR, [0.7, 0.6, 0.8, 0.0])
-        # glMaterialfv(GL_FRONT, GL_EMISSION, [0.0, 0.0, 0.0, 1.0])
         glutSolidCube(1.4142)
         glPopMatrix()
 
