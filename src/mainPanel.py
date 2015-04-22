@@ -6,7 +6,7 @@ from OpenGL.GLU import *
 import Plane
 import wx
 import axis
-
+import robotArm
 
 class RobotView(glcanvas.GLCanvas):
     def __init__(self, parent):
@@ -31,12 +31,11 @@ class RobotView(glcanvas.GLCanvas):
         self.worldAxis  = axis.WorldAxis()
         self.plane      = Plane.GridPlane(16, 16)
 
+        self.object     = robotArm.robotArm()
+
         self.SELECTVXYZ = []    # Selection volume vertex coordinates array
         self.ROTXY      = []    # Rotation mouse x and y values
         self.ZYROT      = 1     # Rotation mode (0=XY, 1=ZY)
-        self.XROTANG    = 0.0   # Rotation angle about X-axis
-        self.YROTANG    = 0.0   # Rotation angle about Y-axis
-        self.ZROTANG    = 0.0   # Rotation angle about Z-axis
 
         self.cameraDistance = 10
         self.cameraHorizonalAngle = 0.0
@@ -88,7 +87,7 @@ class RobotView(glcanvas.GLCanvas):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         size = self.size = self.GetClientSize()
-        gluPerspective(10., size.width / float(size.height), 1., 100.)
+        gluPerspective(10., size.width / float(size.height), 1., 150.)
         glViewport(0, 0, size.width, size.height)
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
@@ -166,19 +165,21 @@ class RobotView(glcanvas.GLCanvas):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         self.drawWorldAxes()
         self.drawCube()
-        glPushMatrix()
-        glTranslatef(10.0, 0.0, 0.0)
-        glutSolidSphere(0.5, 20, 20)
-        glPopMatrix()
+        # glPushMatrix()
+        # glTranslatef(10.0, 0.0, 0.0)
+        # glutSolidSphere(0.5, 20, 20)
+        # glPopMatrix()
+        self.object.draw()
         self.SwapBuffers()
 
     def drawCube(self):
         glPushMatrix()
         glTranslatef(-2.0, 0.0, 0.0)
-        glMaterialfv(GL_FRONT, GL_AMBIENT, [0.1745, 0.0, 0.1, 0.0])
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, [0.6, 0.0, 0.1, 0.0])
-        glMaterialfv(GL_FRONT, GL_SPECULAR, [0.7, 0.6, 0.8, 0.0])
-        glMaterialfv(GL_FRONT, GL_EMISSION, [0.0, 0.0, 0.0, 1.0])
+        glColor3f(1.0, 0.0, 0.0)
+        # glMaterialfv(GL_FRONT, GL_AMBIENT, [0.1745, 0.0, 0.1, 0.0])
+        # glMaterialfv(GL_FRONT, GL_DIFFUSE, [1.0, 0.0, 0.0, 1.0])
+        # glMaterialfv(GL_FRONT, GL_SPECULAR, [0.7, 0.6, 0.8, 0.0])
+        # glMaterialfv(GL_FRONT, GL_EMISSION, [0.0, 0.0, 0.0, 1.0])
         glutSolidCube(1.4142)
         glPopMatrix()
 
