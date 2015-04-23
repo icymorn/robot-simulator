@@ -80,8 +80,8 @@ class RobotView(glcanvas.GLCanvas):
         glLoadIdentity()
         gluLookAt(
             self.originalPoint[0] + math.cos(self.cameraVerticalAngle) * math.cos(self.cameraHorizonalAngle) * self.cameraDistance,
-            self.originalPoint[1] + math.sin(self.cameraVerticalAngle) * self.cameraDistance,
             self.originalPoint[2] - math.cos(self.cameraVerticalAngle) * math.sin(self.cameraHorizonalAngle) * self.cameraDistance,
+            self.originalPoint[1] + math.sin(self.cameraVerticalAngle) * self.cameraDistance,
             self.originalPoint[0],
             self.originalPoint[1],
             self.originalPoint[2],
@@ -113,15 +113,15 @@ class RobotView(glcanvas.GLCanvas):
     def OnMouseDown(self, evt):
         self.CaptureMouse()
         wx.CallAfter(self.SetFocus)
-        self.cameraRotate.append(evt.GetPosition())
+        self.cameraRotate = evt.GetPosition()
 
     def OnMouseUp(self, evt):
         self.ReleaseMouse()
-        self.cameraRotate = []
+        self.cameraRotate = None
 
     def OnRightMouseUp(self, evt):
         self.ReleaseMouse()
-        self.cameraMotion = []
+        self.cameraMotion = None
 
     def OnMouseMotion(self, evt):
         if self.cameraRotate and evt.LeftIsDown():
@@ -129,12 +129,12 @@ class RobotView(glcanvas.GLCanvas):
             mx, my = evt.GetPosition()
             w  = viewport[2] - viewport[0]
             h  = viewport[3] - viewport[1]
-            dx = float(mx - self.cameraRotate[0][0])
-            dy = float(my - self.cameraRotate[0][1])
+            dx = float(mx - self.cameraRotate[0])
+            dy = float(my - self.cameraRotate[1])
             # Calculate rotation as 180 degrees per width and height
-            self.cameraHorizonalAngle -= dy * 0.01
-            self.cameraVerticalAngle -= dx * 0.01
-            self.cameraRotate[0] = (mx, my)
+            self.cameraHorizonalAngle += dx * 0.01
+            self.cameraVerticalAngle += dy * 0.01
+            self.cameraRotate = (mx, my)
             self.cameraMoved = True
             self.Refresh(False)
         elif self.cameraMotion and evt.RightIsDown():
@@ -142,39 +142,38 @@ class RobotView(glcanvas.GLCanvas):
             mx, my = evt.GetPosition()
             w  = viewport[2] - viewport[0]
             h  = viewport[3] - viewport[1]
-            dx = float(mx - self.cameraMotion[0][0])
-            dy = float(my - self.cameraMotion[0][1])
+            dx = float(mx - self.cameraMotion[0])
+            dy = float(my - self.cameraMotion[1])
             # Calculate rotation as 180 degrees per width and height
-            u = self.originalPoint[0] + math.cos(self.cameraVerticalAngle) * math.cos(self.cameraHorizonalAngle) * self.cameraDistance
-            v = self.originalPoint[1] + math.sin(self.cameraVerticalAngle) * self.cameraDistance
-            w = self.originalPoint[2] - math.cos(self.cameraVerticalAngle) * math.sin(self.cameraHorizonalAngle) * self.cameraDistance
-            dis = math.sqrt(u**2 + v**2)
-            du = u / dis
-            dv = v / dis
+            dv = math.sin(self.cameraHorizonalAngle)
+            du = math.cos(self.cameraHorizonalAngle)
+            w = math.sin(self.cameraVerticalAngle) * self.cameraDistance
             # print (du, dv)
             if w > 0:
-                self.originalPoint[1] -= dv * dy * 0.01
-                self.originalPoint[0] += du * dx * 0.01
+                self.originalPoint[0] += dv * dx * 0.01
+                self.originalPoint[1] -= du * dx * 0.01
+                self.originalPoint[0] -= du * dy * 0.01
+                self.originalPoint[1] += dv * dy * 0.01
             else:
                 self.originalPoint[1] -= dv * dx * 0.01
                 self.originalPoint[0] += du * dy * 0.01
-            self.cameraMotion[0] = (mx, my)
+            self.cameraMotion = (mx, my)
             self.cameraMoved = True
             self.Refresh(False)
 
     def OnRightMouseDown(self, evt):
             self.CaptureMouse()
             wx.CallAfter(self.SetFocus)
-            self.cameraMotion = [evt.GetPosition()]
+            self.cameraMotion = evt.GetPosition()
 
     def InitGL( self ):
         glMatrixMode(GL_PROJECTION)
         # camera frustrum setup
         glFrustum(-0.5, 0.5, -0.5, 0.5, 1.0, 3.0)
-        glMaterial(GL_FRONT, GL_AMBIENT, [0.2, 0.2, 0.2, 1.0])
-        glMaterial(GL_FRONT, GL_DIFFUSE, [0.8, 0.8, 0.8, 1.0])
-        glMaterial(GL_FRONT, GL_SPECULAR, [1.0, 0.0, 1.0, 1.0])
-        glMaterial(GL_FRONT, GL_SHININESS, 50.0)
+        # glMaterial(GL_FRONT, GL_AMBIENT, [0.2, 0.2, 0.2, 1.0])
+        # glMaterial(GL_FRONT, GL_DIFFUSE, [0.8, 0.8, 0.8, 1.0])
+        # glMaterial(GL_FRONT, GL_SPECULAR, [1.0, 0.0, 1.0, 1.0])
+        # glMaterial(GL_FRONT, GL_SHININESS, 50.0)
         glLight(GL_LIGHT0, GL_AMBIENT, [0.0, 1.0, 0.0, 1.0])
         glLight(GL_LIGHT0, GL_DIFFUSE, [1.0, 1.0, 1.0, 1.0])
         glLight(GL_LIGHT0, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
@@ -228,15 +227,15 @@ class RobotView(glcanvas.GLCanvas):
     def OnDraw(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         self.drawWorldAxes()
-        # self.drawCube()
+        self.drawCube()
         self.object.draw()
         self.SwapBuffers()
 
     def drawCube(self):
         glPushMatrix()
-        glTranslatef(-2.0, 0.0, 0.0)
+        glTranslatef(self.originalPoint[0], self.originalPoint[1], self.originalPoint[2])
         glColor3f(1.0, 0.0, 0.0)
-        glutSolidCube(1.4142)
+        glutSolidCube(0.05)
         glPopMatrix()
 
     def drawWorldAxes(self):
