@@ -19,19 +19,23 @@ class WorldAxis:
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [1, 0, 0, 1], 0)
         glPushMatrix()
         glRotatef(90, 0, 1, 0) # drawAxis draws a z-axis; rotate it onto the x-axis.
+        glColor3f(1, 0, 0)
         self._drawAxis()
         glPopMatrix()
 
         # Draw the y-axis in green.
+
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0, 0.8, 0, 1], 0)
         glPushMatrix()
         glRotatef(-90, 1, 0, 0) # drawAxis draws a z-axis; rotate it onto the y-axis.
+        glColor3f(0, 1, 0)
         self._drawAxis()
         glPopMatrix()
 
         # Draw the z-axis in blue.
         glPushMatrix()
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0.2, 0.2, 1, 1], 0)
+        glColor3f(0, 0, 1)
         self._drawAxis()
         glPopMatrix()
 

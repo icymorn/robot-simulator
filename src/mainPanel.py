@@ -144,19 +144,13 @@ class RobotView(glcanvas.GLCanvas):
             h  = viewport[3] - viewport[1]
             dx = float(mx - self.cameraMotion[0])
             dy = float(my - self.cameraMotion[1])
-            # Calculate rotation as 180 degrees per width and height
-            dv = math.sin(self.cameraHorizonalAngle)
-            du = math.cos(self.cameraHorizonalAngle)
-            w = math.sin(self.cameraVerticalAngle) * self.cameraDistance
-            # print (du, dv)
-            if w > 0:
-                self.originalPoint[0] += dv * dx * 0.01
-                self.originalPoint[1] -= du * dx * 0.01
-                self.originalPoint[0] -= du * dy * 0.01
-                self.originalPoint[1] += dv * dy * 0.01
-            else:
-                self.originalPoint[1] -= dv * dx * 0.01
-                self.originalPoint[0] += du * dy * 0.01
+            du = math.sin(self.cameraHorizonalAngle + math.pi)
+            dv = math.cos(self.cameraHorizonalAngle + math.pi)
+            self.originalPoint[0] += du * dx * 0.01
+            self.originalPoint[1] += dv * dy * 0.01
+            # self.originalPoint[0] += du * dy * 0.01
+            # self.originalPoint[1] += dv * dx * 0.01
+
             self.cameraMotion = (mx, my)
             self.cameraMoved = True
             self.Refresh(False)
@@ -170,7 +164,7 @@ class RobotView(glcanvas.GLCanvas):
         glMatrixMode(GL_PROJECTION)
         # camera frustrum setup
         glFrustum(-0.5, 0.5, -0.5, 0.5, 1.0, 3.0)
-        # glMaterial(GL_FRONT, GL_AMBIENT, [0.2, 0.2, 0.2, 1.0])
+        glMaterial(GL_FRONT, GL_AMBIENT, [0.2, 0.2, 0.2, 1.0])
         # glMaterial(GL_FRONT, GL_DIFFUSE, [0.8, 0.8, 0.8, 1.0])
         # glMaterial(GL_FRONT, GL_SPECULAR, [1.0, 0.0, 1.0, 1.0])
         # glMaterial(GL_FRONT, GL_SHININESS, 50.0)
@@ -179,7 +173,7 @@ class RobotView(glcanvas.GLCanvas):
         glLight(GL_LIGHT0, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
         glLight(GL_LIGHT0, GL_POSITION, [1.0, 1.0, 1.0, 0.0])
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.2, 0.2, 0.2, 1.0])
-        glEnable(GL_LIGHTING)
+        # glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
         glDepthFunc(GL_LESS)
         glEnable(GL_DEPTH_TEST)
@@ -188,8 +182,8 @@ class RobotView(glcanvas.GLCanvas):
         glMatrixMode(GL_MODELVIEW)
         # position viewer
         # glTranslatef(0.0, 0.0, 0.0)
-        t = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
-        glLoadMatrixd(t)
+        # t = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+        # glLoadMatrixd(t)
         # mat_specular = [ 1.0, 1.0, 1.0, 1.0]
         # mat_shininess = [ 25.0]
         # light_position = [ 20.0, 20.0, 20.0, 0.0]

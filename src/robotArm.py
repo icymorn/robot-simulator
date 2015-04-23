@@ -3,6 +3,7 @@ import dhmatrix
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
+import math
 
 class robotArm:
 
@@ -19,61 +20,80 @@ class robotArm:
         glColor3f(0.0, 1.0, 0.0)
         # t = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
         # glLoadMatrixd(t)
-        glBegin(GL_LINES)
-
-        base = None
-        for p in self.states:
-            if base is not None:
-                glVertex3f(base[0, 3], base[1, 3], base[2, 3])
-                glVertex3f(p[0, 3], p[1, 3], p[2, 3])
-                # print 'line: ', (base[0, 3], base[1, 3], base[2, 3]), (p[0, 3], p[1, 3], p[2, 3])
-            base = p
-        glEnd()
-
-        # for p in self.states:
-        #     glutSolidCube(0.03)
-        #     glMultMatrixf(p)
-        # glEnd()
+        # glBegin(GL_LINES)
 
         # base = None
+        # for p in self.states:
+        #     if base is not None:
+        #         glVertex3f(base[0, 3], base[1, 3], base[2, 3])
+        #         glVertex3f(p[0, 3], p[1, 3], p[2, 3])
+        #         # print 'line: ', (base[0, 3], base[1, 3], base[2, 3]), (p[0, 3], p[1, 3], p[2, 3])
+        #     base = p
+        # glEnd()
+
+        last = None
+        quadratic = gluNewQuadric()
+
         for j in self.joint:
-            if j.d is not 0:
+            # if j.d is not 0:
                 # glColor3f(0.0, 1.0, 0.0)
-                glPushMatrix()
-
-                glRotated(j.theta, 0, 0, 1)
-                glPushMatrix()
-                glutSolidSphere(0.03,10,10)
-                glPopMatrix()
-
-                glPushMatrix()
-                glTranslated(0,0,j.d / 2.0)
-                glutSolidCube(0.05)
-                glPopMatrix()
-
-                glColor3f(1.0, 0.0, 0.0)
-
-                glPopMatrix()
+            # glPushMatrix()
+            #
+            # glRotated(math.degrees(j.theta), 0, 0, 1)
+            # glPushMatrix()
+            # glutSolidSphere(0.03,10,10)
+            # # gluCylinder(quadratic, 0.05, 0, j.d, 4, 4)
+            # # gluCylinder(quadratic, 0.05, 0.05, j.d, 4, 4)
+            # # glTranslated(0,0,j.d / 2.0)
+            # # glutSolidCube(0.05)
+            #
+            # glPopMatrix()
+            #
+            glColor3f(1.0, 0.0, 0.0)
+            #
+            # glPopMatrix()
             # glutSolidCube(0.03)
-            glMultMatrixd(j.transform().transpose())
-            # data = glGetFloatv(GL_MODELVIEW)
-            # print j.transform()
-            # a = (GLfloat * 16)()
-            # mvm = glGetFloatv(GL_VIEWPORT, a)
-            # print list(a)
+            glPushMatrix()
+            glRotated(math.degrees(j.theta), 0, 0, 1)
+            glColor3f(0, 1, 0)
+            if j.d < 0.02:
+                gluCylinder(quadratic, 0.04, 0.04, 0.02, 10, 10)
+            else:
+                gluCylinder(quadratic, 0.04, 0.04, j.d, 10, 10)
+            glTranslated(0, 0, j.d)
 
-            if j.r is not 0:
-                glPushMatrix()
-                glTranslated(-j.r, 0, 0)
-                glutSolidSphere(0.03, 10, 10)
-                glPopMatrix()
-                #
-                # glPushMatrix()
-                # glTranslated(-j.r/2.0, 0, 0)
-                # glutSolidCube(0.03)
-                # glPopMatrix()
-            # glVertex3f(base[0, 3], base[1, 3], base[2, 3])
-            # glVertex3f(p[0, 3], p[1, 3], p[2, 3])
+            glColor3f(1.0, 0.0, 0.0)
+            # if j.alpha > 0.01:
+            #     glRotatef(90, 0, 0, 1)
+            # glRotatef(math.degrees(-j.alpha), 1, 0, 0)
+            # if j.r < 0.02:
+            #     gluCylinder(quadratic, 0.02, 0.02, 0.02, 10, 10)
+            # else:
+            #     gluCylinder(quadratic, 0.02, 0.02, j.r, 10, 10)
+            glPopMatrix()
+
+            # glMultMatrixd(j.iniM().transD().rotTheta().transR().rotAlpha().m.transpose())
+            glMultMatrixd(j.iniM().transD().rotTheta().transR().m.transpose())
+
+            glPushMatrix()
+            glRotatef(-90, 0, 1, 0)
+            gluCylinder(quadratic, 0.02, 0.02, j.r, 10, 10)
+            glColor3f(1.0, 0.0, 0.0)
+            glPopMatrix()
+
+            glMultMatrixd(j.iniM().rotAlpha().m.transpose())
+            # glRotated(180, 0, 0, 1)
+            # glMultMatrixd(j.iniM().rotAlpha().m.I.transpose())
+            # glMultMatrixd(j.transR().rotAlpha().m)
+            last = j
+
+        glColor3f(1.0, 0.0, 0.0)
+        glPushMatrix()
+        glRotated(math.degrees(last.theta), 0, 0, 1)
+        glColor3f(0, 1, 0)
+        gluCylinder(quadratic, 0.04, 0.04, last.d, 10, 10)
+        glPopMatrix()
+
         glPopMatrix()
 
     def updateAllTransformer(self):

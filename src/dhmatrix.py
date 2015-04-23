@@ -13,7 +13,6 @@ class DHMatrix:
         self.d     = d
         self.r     = r
         self.alpha = toRadian(alpha)
-        self.m     = np.mat(np.eye(4))
         self.prev  = prev
         self.next  = next
 
@@ -32,17 +31,36 @@ class DHMatrix:
             [0       , 0                   , 0                   , 1]
         ])
 
-    def transD(self):
+    def matrixFirst(self):
         pass
+
+    def iniM(self):
+        self.m = np.mat(np.eye(4))
+        return self
+
+    def transD(self):
+        self.m = self.m * [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, self.d], [0, 0, 0, 1]]
+        return self
 
     def transR(self):
-        pass
+        self.m = self.m * [[1, 0, 0, self.r], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+        return self
 
-    def RotAphla(self):
-        pass
+    def rotAlpha(self):
+        cosTheta = cos(self.theta)
+        sinTheta = sin(self.theta)
+        sinAlpha = sin(self.alpha)
+        cosAlpha = cos(self.alpha)
+        self.m = self.m * [[1, 0, 0, 0], [0, cosAlpha, -sinAlpha, 0], [0, sinAlpha, cosAlpha, 0], [0, 0, 0, 1]]
+        return self
 
-    def RotTheta(self):
-        pass
+    def rotTheta(self):
+        cosTheta = cos(self.theta)
+        sinTheta = sin(self.theta)
+        sinAlpha = sin(self.alpha)
+        cosAlpha = cos(self.alpha)
+        self.m = self.m * [[cosTheta, -sinTheta, 0, 0], [sinTheta, cosTheta, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+        return self
 
     def setTheta(self, theta):
         self.theta = theta
@@ -69,6 +87,7 @@ if __name__ == '__main__':
     m3 = DHMatrix(45, 0.2, 0.3, 0)
     # print base.transform() * m1.transform()
     # print m1.transform() * m2.transform()
-    m = m1.transform() * m2.transform() * m3.transform()
+    m = m2.transform()
     print m
-    print m[0,3]
+    m_x = m2.iniM().transD().rotTheta().transR().rotAlpha().m
+    print m_x
