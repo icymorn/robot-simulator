@@ -14,7 +14,8 @@ class GridPlane:
     def draw(self):
         glPushMatrix()
         glLineWidth(2)
-        glColor3f(0.5, 0.5, 0.5)
+        glMaterial(GL_FRONT, GL_AMBIENT, [0.5, 0.5, 0.5, 1.0])
+        # glColor3f(0.5, 0.5, 0.5)
         glTranslatef(self.x, self.y, self.z)
         glBegin(GL_LINES)
 

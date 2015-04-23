@@ -7,6 +7,7 @@ import Plane
 import wx
 import axis
 import robotArm
+import fasterobj
 
 class RobotView(glcanvas.GLCanvas):
     def __init__(self, parent):
@@ -54,6 +55,7 @@ class RobotView(glcanvas.GLCanvas):
         self.Bind(wx.EVT_MOTION, self.OnMouseMotion)
         self.Bind(wx.EVT_MOUSEWHEEL, self.OnWheel)
 
+        self.obj = None
         self.SetFocus()
 
     def OnEraseBackground(self, event):
@@ -164,16 +166,17 @@ class RobotView(glcanvas.GLCanvas):
         glMatrixMode(GL_PROJECTION)
         # camera frustrum setup
         glFrustum(-0.5, 0.5, -0.5, 0.5, 1.0, 3.0)
-        glMaterial(GL_FRONT, GL_AMBIENT, [0.2, 0.2, 0.2, 1.0])
+        glMaterial(GL_FRONT, GL_AMBIENT, [0.7, 0.7, 0.7, 1.0])
         # glMaterial(GL_FRONT, GL_DIFFUSE, [0.8, 0.8, 0.8, 1.0])
         # glMaterial(GL_FRONT, GL_SPECULAR, [1.0, 0.0, 1.0, 1.0])
         # glMaterial(GL_FRONT, GL_SHININESS, 50.0)
-        glLight(GL_LIGHT0, GL_AMBIENT, [0.0, 1.0, 0.0, 1.0])
-        glLight(GL_LIGHT0, GL_DIFFUSE, [1.0, 1.0, 1.0, 1.0])
-        glLight(GL_LIGHT0, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
-        glLight(GL_LIGHT0, GL_POSITION, [1.0, 1.0, 1.0, 0.0])
-        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.2, 0.2, 0.2, 1.0])
-        # glEnable(GL_LIGHTING)
+        # glLight(GL_LIGHT0, GL_AMBIENT, [0.0, 1.0, 0.0, 1.0])
+        # glLight(GL_LIGHT0, GL_DIFFUSE, [1.0, 1.0, 1.0, 1.0])
+        # glLight(GL_LIGHT0, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
+        # glLight(GL_LIGHT0, GL_POSITION, [1.0, 1.0, 1.0, 0.0])
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.7, 0.7, 0.7, 1.0])
+        glEnable(GL_LIGHTING)
+        glEnable(GL_NORMALIZE)
         glEnable(GL_LIGHT0)
         glDepthFunc(GL_LESS)
         glEnable(GL_DEPTH_TEST)
@@ -224,13 +227,19 @@ class RobotView(glcanvas.GLCanvas):
         self.drawCube()
         self.object.draw()
         self.SwapBuffers()
+        # glPushMatrix()
+        # if self.obj is None:
+        #     self.obj = fasterobj.OBJ('claw.obj')
+        # glCallList(self.obj.gl_list)
+        # glPopMatrix()
 
     def drawCube(self):
         glPushMatrix()
         glTranslatef(self.originalPoint[0], self.originalPoint[1], self.originalPoint[2])
-        glColor3f(1.0, 0.0, 0.0)
-        glutSolidCube(0.05)
+        # glColor3f(1.0, 0.0, 0.0)
+        # glutSolidCube(0.05)
         glPopMatrix()
+
 
     def drawWorldAxes(self):
         self.worldAxis.draw()

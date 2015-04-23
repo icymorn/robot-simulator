@@ -35,27 +35,11 @@ class robotArm:
         quadratic = gluNewQuadric()
 
         for j in self.joint:
-            # if j.d is not 0:
-                # glColor3f(0.0, 1.0, 0.0)
-            # glPushMatrix()
-            #
-            # glRotated(math.degrees(j.theta), 0, 0, 1)
-            # glPushMatrix()
-            # glutSolidSphere(0.03,10,10)
-            # # gluCylinder(quadratic, 0.05, 0, j.d, 4, 4)
-            # # gluCylinder(quadratic, 0.05, 0.05, j.d, 4, 4)
-            # # glTranslated(0,0,j.d / 2.0)
-            # # glutSolidCube(0.05)
-            #
-            # glPopMatrix()
-            #
             glColor3f(1.0, 0.0, 0.0)
-            #
-            # glPopMatrix()
-            # glutSolidCube(0.03)
             glPushMatrix()
             glRotated(math.degrees(j.theta), 0, 0, 1)
-            glColor3f(0, 1, 0)
+            glMaterial(GL_FRONT, GL_AMBIENT, [0.0, 1.0, 0.0, 1.0])
+            # glColor3f(0, 1, 0)
             if j.d < 0.02:
                 gluCylinder(quadratic, 0.04, 0.04, 0.02, 10, 10)
             else:
@@ -63,28 +47,19 @@ class robotArm:
             glTranslated(0, 0, j.d)
 
             glColor3f(1.0, 0.0, 0.0)
-            # if j.alpha > 0.01:
-            #     glRotatef(90, 0, 0, 1)
-            # glRotatef(math.degrees(-j.alpha), 1, 0, 0)
-            # if j.r < 0.02:
-            #     gluCylinder(quadratic, 0.02, 0.02, 0.02, 10, 10)
-            # else:
-            #     gluCylinder(quadratic, 0.02, 0.02, j.r, 10, 10)
             glPopMatrix()
-
-            # glMultMatrixd(j.iniM().transD().rotTheta().transR().rotAlpha().m.transpose())
             glMultMatrixd(j.iniM().transD().rotTheta().transR().m.transpose())
 
             glPushMatrix()
             glRotatef(-90, 0, 1, 0)
-            gluCylinder(quadratic, 0.02, 0.02, j.r, 10, 10)
-            glColor3f(1.0, 0.0, 0.0)
+            glMaterial(GL_FRONT, GL_AMBIENT, [0.0, 0.0, 1.0, 1.0])
+            if j.r < 0.02:
+                gluCylinder(quadratic, 0.02, 0.02, 0.02, 10, 10)
+            else:
+                gluCylinder(quadratic, 0.02, 0.02, j.r, 10, 10)
             glPopMatrix()
 
             glMultMatrixd(j.iniM().rotAlpha().m.transpose())
-            # glRotated(180, 0, 0, 1)
-            # glMultMatrixd(j.iniM().rotAlpha().m.I.transpose())
-            # glMultMatrixd(j.transR().rotAlpha().m)
             last = j
 
         glColor3f(1.0, 0.0, 0.0)
