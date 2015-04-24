@@ -9,7 +9,6 @@ class Backend:
         self.server.bind(('', config.port))
         self.server.listen(1)
 
-
     def defaultOnMessage(self, data):
         print 'meessage recieved: ' + data
 
@@ -22,14 +21,18 @@ class Backend:
         conn.close()
 
 class BackendThread(threading.Thread):
+
+    def __init__(self):
+        self.setCallback(self.defaultCallback)
+
     def setCallback(self, callback):
         self.callback = callback
 
     def defaultCallback(self, data):
-        print 'message' + data
+        print 'message: ', data
 
     def onConnected(self, addr):
-        print 'connected:' + addr
+        print 'connected:', addr
 
     def run(self):
         self.running = True
@@ -55,3 +58,7 @@ class BackendThread(threading.Thread):
     def terminate(self):
         self.running = False
         self.server.close()
+
+if __name__ == '__main__':
+    server = BackendThread()
+    server.run()
