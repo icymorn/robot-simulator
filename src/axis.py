@@ -16,7 +16,7 @@ class WorldAxis:
         glTranslatef(self.x, self.y, self.z)
         # glLoadIdentity()
         # Draw the x-axis in red.
-        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [1, 0, 0, 1], 0)
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [1, 0, 0, 1])
         glPushMatrix()
         glRotatef(90, 0, 1, 0) # drawAxis draws a z-axis; rotate it onto the x-axis.
         glColor3f(1, 0, 0)
@@ -25,7 +25,7 @@ class WorldAxis:
 
         # Draw the y-axis in green.
 
-        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0, 0.8, 0, 1], 0)
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0, 0.8, 0, 1])
         glPushMatrix()
         glRotatef(-90, 1, 0, 0) # drawAxis draws a z-axis; rotate it onto the y-axis.
         glColor3f(0, 1, 0)
@@ -34,7 +34,7 @@ class WorldAxis:
 
         # Draw the z-axis in blue.
         glPushMatrix()
-        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0.2, 0.2, 1, 1], 0)
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0.2, 0.2, 1, 1])
         glColor3f(0, 0, 1)
         self._drawAxis()
         glPopMatrix()
