@@ -9,6 +9,7 @@ class Config:
         self.joint = []
         for m in self.data['robot_arm']:
             self.joint.append(dhmatrix.DHMatrix(m['theta'], m['d'], m['r'], m['alpha']))
+        self.port = self.data['backend_server']['port']
 
 def main():
     config = Config('../config.yaml')

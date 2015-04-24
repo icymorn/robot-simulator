@@ -7,7 +7,7 @@ import Plane
 import wx
 import axis
 import robotArm
-import fasterobj
+# import fasterobj
 
 class RobotView(glcanvas.GLCanvas):
     def __init__(self, parent):
@@ -167,13 +167,6 @@ class RobotView(glcanvas.GLCanvas):
         # camera frustrum setup
         glFrustum(-0.5, 0.5, -0.5, 0.5, 1.0, 3.0)
         glMaterial(GL_FRONT, GL_AMBIENT, [0.7, 0.7, 0.7, 1.0])
-        # glMaterial(GL_FRONT, GL_DIFFUSE, [0.8, 0.8, 0.8, 1.0])
-        # glMaterial(GL_FRONT, GL_SPECULAR, [1.0, 0.0, 1.0, 1.0])
-        # glMaterial(GL_FRONT, GL_SHININESS, 50.0)
-        # glLight(GL_LIGHT0, GL_AMBIENT, [0.0, 1.0, 0.0, 1.0])
-        # glLight(GL_LIGHT0, GL_DIFFUSE, [1.0, 1.0, 1.0, 1.0])
-        # glLight(GL_LIGHT0, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
-        # glLight(GL_LIGHT0, GL_POSITION, [1.0, 1.0, 1.0, 0.0])
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.7, 0.7, 0.7, 1.0])
         glEnable(GL_LIGHTING)
         glEnable(GL_NORMALIZE)
@@ -181,45 +174,8 @@ class RobotView(glcanvas.GLCanvas):
         glDepthFunc(GL_LESS)
         glEnable(GL_DEPTH_TEST)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        # position viewer
         glMatrixMode(GL_MODELVIEW)
-        # position viewer
-        # glTranslatef(0.0, 0.0, 0.0)
-        # t = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
-        # glLoadMatrixd(t)
-        # mat_specular = [ 1.0, 1.0, 1.0, 1.0]
-        # mat_shininess = [ 25.0]
-        # light_position = [ 20.0, 20.0, 20.0, 0.0]
-        # white_light = [ 1, 1, 1, 1.0 ]
-        #
-        # glClearColor(0.8,0.8,1.0,1.0)
-        # glClearDepth(10.0)
-        # glShadeModel(GL_SMOOTH)
-        # glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular)
-        # glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess)
-        # glLightfv(GL_LIGHT0, GL_POSITION, light_position)
-        # glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light)
-        # glLightfv(GL_LIGHT0, GL_SPECULAR, white_light)
-
-        # glEnable(GL_LIGHTING)
-        # glEnable(GL_NORMALIZE)
-        # glEnable(GL_LIGHT0)
-        # glEnable(GL_DEPTH_TEST)
-        # glEnable(GL_TEXTURE_2D)
-        # glEnable(GL_CULL_FACE)
-        # # glEnable(GL_FOG)
-        # glDepthMask(GL_TRUE)
-        # glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
-
-        # fogColor= [0.8, 0.8, 1.0, 1.0]
-        # glFogi(GL_FOG_MODE, GL_LINEAR)
-        # glFogfv(GL_FOG_COLOR, fogColor)
-        # glFogf(GL_FOG_DENSITY, 0.3)
-        # glHint(GL_FOG_HINT, GL_DONT_CARE)
-        # glFogf(GL_FOG_START,10.0)
-        # glFogf(GL_FOG_END, 40.0)
         glutInit()
-        # glutInit(sys.argv)
 
     def OnDraw(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
