@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import wx
+from loader import config
 
 class ElementTree:
 
@@ -13,7 +15,10 @@ class ElementTree:
         parent.SetSizerAndFit(hBox)
         root = self.elementTree.AddRoot('Root item')
 
-        for i in range(10):
-            self.elementTree.AppendItem(root, 'Item %d'%(i+1))
+        itemArray = []
+        for i in config.joint:
+            itemArray.append(self.elementTree.AppendItem(root, 'd:{0:.2f} T:{0:.2f} r:{0:.2f} A:{0:.2f}'.format(i.d, i.theta, i.r, i.alpha)))
+
+        self.items = itemArray
 
         self.elementTree.ExpandAll()

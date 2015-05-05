@@ -27,6 +27,7 @@ class BackendThread(threading.Thread):
         super(BackendThread, self).__init__()
         self.setCallback(self.defaultCallback)
         self.running = True
+        self.setDaemon(True)
 
     def setCallback(self, callback):
         self.callback = callback

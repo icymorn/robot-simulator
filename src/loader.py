@@ -13,7 +13,6 @@ class Config:
 
 def main():
     config = Config('../config.yaml')
-    print config.joint
 
 if __name__ == '__main__':
     main()

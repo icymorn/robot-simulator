@@ -7,6 +7,8 @@ import Plane
 import wx
 import axis
 import robotArm
+import logWin
+import backendServer
 # import fasterobj
 
 class RobotView(glcanvas.GLCanvas):
@@ -57,6 +59,10 @@ class RobotView(glcanvas.GLCanvas):
 
         self.obj = None
         self.SetFocus()
+
+        server = backendServer.BackendThread()
+        server.setCallback(self.onRecieve)
+        server.start()
 
     def OnEraseBackground(self, event):
         pass
@@ -200,6 +206,10 @@ class RobotView(glcanvas.GLCanvas):
     def drawWorldAxes(self):
         self.worldAxis.draw()
         self.plane.draw()
+
+    def onRecieve(self, data):
+        if logWin.instance is not None:
+            logWin.instance.log(data)
 
 if __name__ == '__main__':
     app = wx.App()

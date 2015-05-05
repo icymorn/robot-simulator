@@ -1,7 +1,7 @@
 # robot arm simulator
 robot_arm:
   - { theta: 0, d: 0.3, r: 0.3, alpha: 90}
-  - { theta: 45, d: 0, r: 0.3, alpha: 90}
-  - { theta: 45, d: 0.3, r: 0.3, alpha: 0}
+  - { theta: 45, d: 0, r: 0.3, alpha: 0}
+  - { theta: 45, d: 0, r: 0.3, alpha: 0}
   - { theta: 45, d: 0, r: 0.3, alpha: 0}
 backend_server: { port: 9556 }

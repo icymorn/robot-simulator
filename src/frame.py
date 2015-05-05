@@ -59,5 +59,5 @@ class MainFrame(wx.Frame):
 
 if __name__ == '__main__':
     app = wx.App()
-    frame = MainFrame(None,title='Robot Arm Simulator', size=(800,600))
+    frame = MainFrame(None,title='Robot Arm Simulator', size=(800, 600))
     app.MainLoop()
