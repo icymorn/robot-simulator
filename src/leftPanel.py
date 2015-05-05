@@ -3,8 +3,11 @@ import wx
 from loader import config
 
 class ElementTree:
+    instance = None
 
     def __init__(self, parent):
+        if ElementTree.instance is None:
+            ElementTree.instance = self
 
         self.elementTree = wx.TreeCtrl(parent, -1, style=wx.TR_DEFAULT_STYLE)
         self.elementInfo = wx.Panel(parent, -1)

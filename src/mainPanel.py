@@ -9,6 +9,8 @@ import axis
 import robotArm
 import logWin
 import backendServer
+from loader import config
+from leftPanel import ElementTree
 # import fasterobj
 
 class RobotView(glcanvas.GLCanvas):
@@ -63,6 +65,8 @@ class RobotView(glcanvas.GLCanvas):
         server = backendServer.BackendThread()
         server.setCallback(self.onRecieve)
         server.start()
+
+        self.Refresh(False)
 
     def OnEraseBackground(self, event):
         pass
@@ -209,7 +213,18 @@ class RobotView(glcanvas.GLCanvas):
 
     def onRecieve(self, data):
         if logWin.instance is not None:
+            tuple = data.split(' ')
+            if len(tuple) > 1:
+                port = int(tuple[0])
+                value = float(tuple[1])
+                print "port ", port
+                joint = config.joint[port]
+                joint.setTheta(value * math.pi / 180)
+
+                ElementTree.instance.elementTree.SetItemText(ElementTree.instance.items[port], 'd:{0:.2f} T:{0:.2f} r:{0:.2f} A:{0:.2f}'.format(joint.d, joint.theta, joint.r, joint.alpha))
+                self.Refresh(False)
             logWin.instance.log(data)
+
 
 if __name__ == '__main__':
     app = wx.App()

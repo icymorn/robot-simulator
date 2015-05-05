@@ -8,7 +8,7 @@ class Config:
         self.data = yaml.load(stream)
         self.joint = []
         for m in self.data['robot_arm']:
-            self.joint.append(dhmatrix.DHMatrix(m['theta'], m['d'], m['r'], m['alpha']))
+            self.joint.append(dhmatrix.DHMatrix(m['theta'], m['d'], m['r'], m['alpha'], m['transform']['scale'], m['transform']['offset']))
         self.port = self.data['backend_server']['port']
 
 def main():

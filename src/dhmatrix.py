@@ -8,13 +8,13 @@ def toRadian(degree):
 
 class DHMatrix:
 
-    def __init__(self, theta, d, r, alpha, prev = None, next = None):
+    def __init__(self, theta, d, r, alpha, scale = 1, offset = 0):
         self.theta = toRadian(theta)
         self.d     = d
         self.r     = r
         self.alpha = toRadian(alpha)
-        self.prev  = prev
-        self.next  = next
+        self.scale = scale
+        self.offset = offset
 
     def matrix(self):
         return self.m
@@ -47,18 +47,15 @@ class DHMatrix:
         return self
 
     def rotAlpha(self):
-        cosTheta = cos(self.theta)
-        sinTheta = sin(self.theta)
         sinAlpha = sin(self.alpha)
         cosAlpha = cos(self.alpha)
         self.m = self.m * [[1, 0, 0, 0], [0, cosAlpha, -sinAlpha, 0], [0, sinAlpha, cosAlpha, 0], [0, 0, 0, 1]]
         return self
 
     def rotTheta(self):
-        cosTheta = cos(self.theta)
-        sinTheta = sin(self.theta)
-        sinAlpha = sin(self.alpha)
-        cosAlpha = cos(self.alpha)
+        theta = self.scale * self.theta + self.offset
+        cosTheta = cos(theta)
+        sinTheta = sin(theta)
         self.m = self.m * [[cosTheta, -sinTheta, 0, 0], [sinTheta, cosTheta, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
         return self
 
@@ -74,11 +71,6 @@ class DHMatrix:
     def setR(self, r):
         self.r = r
 
-    def setPrev(self, prev):
-        self.prev = prev
-
-    def setNext(self, next):
-        self.next = next
 
 if __name__ == '__main__':
     base = DHMatrix(0, 0, 0, 0)
