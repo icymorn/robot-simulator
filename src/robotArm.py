@@ -15,22 +15,7 @@ class robotArm:
 
     def draw(self):
         glPushMatrix()
-        # glLoadIdentity()
-        # glLineWidth(5)
         glColor3f(0.0, 1.0, 0.0)
-        # t = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
-        # glLoadMatrixd(t)
-        # glBegin(GL_LINES)
-
-        # base = None
-        # for p in self.states:
-        #     if base is not None:
-        #         glVertex3f(base[0, 3], base[1, 3], base[2, 3])
-        #         glVertex3f(p[0, 3], p[1, 3], p[2, 3])
-        #         # print 'line: ', (base[0, 3], base[1, 3], base[2, 3]), (p[0, 3], p[1, 3], p[2, 3])
-        #     base = p
-        # glEnd()
-
         last = None
         quadratic = gluNewQuadric()
 
@@ -70,6 +55,10 @@ class robotArm:
         glPopMatrix()
 
         glPopMatrix()
+
+    def slowTo(self, jointAngles):
+        for 
+        self.joint
 
     def updateAllTransformer(self):
         self.transformer = []

@@ -66,7 +66,10 @@ class RobotView(glcanvas.GLCanvas):
         server.setCallback(self.onRecieve)
         server.start()
 
-        self.Refresh(False)
+        self.SetCurrent(self.context)
+        self.InitGL()
+        self.moveCamera()
+        self.Refresh(True)
 
     def OnEraseBackground(self, event):
         pass
@@ -110,7 +113,7 @@ class RobotView(glcanvas.GLCanvas):
         self.moveCamera()
 
     def OnPaint(self, event):
-        self.SetCurrent(self.context)
+        # self.SetCurrent(self.context)
         if not self.init:
             self.InitGL()
             self.init = True
