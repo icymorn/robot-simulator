@@ -9,6 +9,7 @@ import axis
 import robotArm
 import logWin
 import backendServer
+import ik
 from loader import config
 from leftPanel import ElementTree
 # import fasterobj
@@ -221,18 +222,43 @@ class RobotView(glcanvas.GLCanvas):
 
     def onRecieve(self, data):
         if logWin.instance is not None:
-            tuple = data.split(' ')
-            if len(tuple) > 1:
-                port = int(tuple[0])
-                value = float(tuple[1])
-                print "port ", port
+            if data.startswith('#'):
+                tuple = data[1:].split(' ')
+                if len(tuple) > 1:
+                    port = int(tuple[0])
+                    value = float(tuple[1])
+                    print "port ", port
 
-                angles = self.object.getCurrentAngles()
-                angles[port] = value * math.pi / 180
-                self.object.slowTo(angles, self.Refresh)
+                    angles = self.object.getCurrentAngles()
+                    angles[port] = value * math.pi / 180
+                    self.object.slowTo(angles, self.Refresh)
 
-                # ElementTree.instance.elementTree.SetItemText(ElementTree.instance.items[port], 'd:{0:.2f} T:{0:.2f} r:{0:.2f} A:{0:.2f}'.format(joint.d, joint.theta, joint.r, joint.alpha))
-                # self.Refresh(False)
+                    # ElementTree.instance.elementTree.SetItemText(ElementTree.instance.items[port], 'd:{0:.2f} T:{0:.2f} r:{0:.2f} A:{0:.2f}'.format(joint.d, joint.theta, joint.r, joint.alpha))
+                    # self.Refresh(False)
+            elif data.startswith('(') and data.endswith(')'):
+                tuple = data[1:-1].split(',')
+                length = len(tuple)
+                print "lenght: ", length
+                if length > 1:
+                    angles = self.object.getCurrentAngles()
+                    x = float(tuple[0])
+                    y = float(tuple[1])
+                    print tuple
+                    if length == 2:
+                        r = angles[0]
+                    else:
+                        r = float(tuple[2])
+                    angles[0] = r
+                    thetas = ik.ik(x, y)
+                    theta1 = thetas[0]
+                    theta2 = thetas[1]
+                    theta3 = thetas[2]
+                    angles[1] = theta1
+                    angles[2] = theta2
+                    angles[3] = theta3
+
+                    self.object.slowTo(angles, self.Refresh)
+
             logWin.instance.log(data)
 
 

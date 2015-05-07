@@ -13,6 +13,7 @@ class robotArm:
         self.hasChanged = True
         self.updateAllTransformer()
         self.updateAllState()
+        self.animation = None
 
     def draw(self):
         glPushMatrix()
@@ -61,12 +62,15 @@ class robotArm:
         return [angle.theta for angle in self.joint]
 
     def slowTo(self, jointAngles, callback):
-        startAngle = [angle.theta for angle in self.joint]
+        if self.animation is not None and self.animation.isRunning:
+            self.animation.cancel()
+        startAngle = self.getCurrentAngles()
         endAngle   = jointAngles
-        anemate    = AnimateThread(startAngle, endAngle, 3)
-        anemate.setCallback(callback)
-        anemate.setDaemon(True)
-        anemate.start()
+        animate    = AnimateThread(startAngle, endAngle, 3)
+        animate.setCallback(callback)
+        animate.setDaemon(True)
+        animate.start()
+        self.animation = animate
 
     def updateAllTransformer(self):
         self.transformer = []
@@ -86,5 +90,4 @@ class robotArm:
             else:
                 currentState = currentState * trans
                 self.states.append(currentState)
-                print currentState[(0, 3)]
         self.hasChanged = False

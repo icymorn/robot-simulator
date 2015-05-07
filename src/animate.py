@@ -22,6 +22,9 @@ class AnimateThread(threading.Thread):
     def defaultCallback(self):
         print(self.currentAngle)
 
+    def cancel(self):
+        self.isRunning = False
+
     def run(self):
         while self.isRunning:
             currentTimeDiff = time.time() - self.startAt
