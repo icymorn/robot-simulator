@@ -14,7 +14,12 @@ from leftPanel import ElementTree
 # import fasterobj
 
 class RobotView(glcanvas.GLCanvas):
+    instance = None
+
     def __init__(self, parent):
+        if RobotView.instance == None:
+            instance = self
+
         glcanvas.GLCanvas.__init__(self, parent, -1)
         hBox = wx.BoxSizer(wx.HORIZONTAL)
         hBox.Add(self, 1, flag = wx.EXPAND)
@@ -221,11 +226,13 @@ class RobotView(glcanvas.GLCanvas):
                 port = int(tuple[0])
                 value = float(tuple[1])
                 print "port ", port
-                joint = config.joint[port]
-                joint.setTheta(value * math.pi / 180)
 
-                ElementTree.instance.elementTree.SetItemText(ElementTree.instance.items[port], 'd:{0:.2f} T:{0:.2f} r:{0:.2f} A:{0:.2f}'.format(joint.d, joint.theta, joint.r, joint.alpha))
-                self.Refresh(False)
+                angles = self.object.getCurrentAngles()
+                angles[port] = value * math.pi / 180
+                self.object.slowTo(angles, self.Refresh)
+
+                # ElementTree.instance.elementTree.SetItemText(ElementTree.instance.items[port], 'd:{0:.2f} T:{0:.2f} r:{0:.2f} A:{0:.2f}'.format(joint.d, joint.theta, joint.r, joint.alpha))
+                # self.Refresh(False)
             logWin.instance.log(data)
 
 

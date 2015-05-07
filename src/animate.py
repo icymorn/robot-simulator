@@ -1,5 +1,6 @@
 import time
 import threading
+from loader import config
 
 class AnimateThread(threading.Thread):
     
@@ -10,31 +11,34 @@ class AnimateThread(threading.Thread):
         self.during       = during
         self.startAt      = time.time()
         self.currentAngle = startAngles[:]
-        self.diffAngle    = []
-
-        i = 0
-        for angle in self.startAngles:
-            self.currentAngle[i] = angle - self.endAngles[i]
-            i += 1
+        length = len(startAngles)
+        self.diffAngle    = [(endAngles[i] - startAngles[i]) for i in range(length)]
         self.setCallback(self.defaultCallback)
         self.isRunning    = True
 
     def setCallback(self, callback):
         self.callback = callback
 
-    def defaultCallback(self, params):
-        print(params)
+    def defaultCallback(self):
+        print(self.currentAngle)
 
     def run(self):
         while self.isRunning:
-            i = 0
             currentTimeDiff = time.time() - self.startAt
             progress = currentTimeDiff / self.during
             if progress >= 1.0:
                 self.isRunning = False
                 progress = 1.0
+
+            i = 0
             for angle in self.startAngles:
-                self.currentAngle[i] = self.startAngles[i] + self.diffAngle * progress
-            i += 1
-            self.callback(self.currentAngle)
+                self.currentAngle[i] = angle + self.diffAngle[i] * progress
+                config.joint[i].setTheta(self.currentAngle[i])
+                i += 1
+
+            self.callback()
             time.sleep(0.1)
+
+if __name__ == '__main__':
+    animate = AnimateThread([5, 10], [15, 5], 2)
+    animate.start()

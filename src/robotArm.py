@@ -4,6 +4,7 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 import math
+from animate import AnimateThread
 
 class robotArm:
 
@@ -56,9 +57,16 @@ class robotArm:
 
         glPopMatrix()
 
-    def slowTo(self, jointAngles):
-        for 
-        self.joint
+    def getCurrentAngles(self):
+        return [angle.theta for angle in self.joint]
+
+    def slowTo(self, jointAngles, callback):
+        startAngle = [angle.theta for angle in self.joint]
+        endAngle   = jointAngles
+        anemate    = AnimateThread(startAngle, endAngle, 3)
+        anemate.setCallback(callback)
+        anemate.setDaemon(True)
+        anemate.start()
 
     def updateAllTransformer(self):
         self.transformer = []
