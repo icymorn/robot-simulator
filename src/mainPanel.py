@@ -233,8 +233,6 @@ class RobotView(glcanvas.GLCanvas):
                     angles[port] = value * math.pi / 180
                     self.object.slowTo(angles, self.Refresh)
 
-                    # ElementTree.instance.elementTree.SetItemText(ElementTree.instance.items[port], 'd:{0:.2f} T:{0:.2f} r:{0:.2f} A:{0:.2f}'.format(joint.d, joint.theta, joint.r, joint.alpha))
-                    # self.Refresh(False)
             elif data.startswith('(') and data.endswith(')'):
                 tuple = data[1:-1].split(',')
                 length = len(tuple)
@@ -247,7 +245,7 @@ class RobotView(glcanvas.GLCanvas):
                     if length == 2:
                         r = angles[0]
                     else:
-                        r = float(tuple[2])
+                        r = float(tuple[2]) * math.pi / 180
                     angles[0] = r
                     thetas = ik.ik(x, y)
                     theta1 = thetas[0]
