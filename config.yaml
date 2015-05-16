@@ -5,3 +5,6 @@ robot_arm:
   - { theta: 45, d: 0, r: 1, alpha: 0, transform: { scale: 1, offset: 0}}
   - { theta: 45, d: 0, r: 1, alpha: 0, transform: { scale: 1, offset: 0}}
 backend_server: { port: 9556 }
+real_robot:
+  - { port: 8, start: 0, transform: { scale: 1, offset: 0, max: 2000, min: 1000}}
+real_claw: { port: 13, start: 0, transform: { scale: 1, offset: 0, max: 1500, min: 1200}}
