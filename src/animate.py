@@ -4,7 +4,7 @@ from loader import config
 
 class AnimateThread(threading.Thread):
     
-    def __init__(self, startAngles, endAngles, during):
+    def __init__(self, startAngles, endAngles, during = 1):
         super(AnimateThread, self).__init__()
         self.startAngles  = startAngles
         self.endAngles    = endAngles
@@ -15,12 +15,20 @@ class AnimateThread(threading.Thread):
         self.diffAngle    = [(endAngles[i] - startAngles[i]) for i in range(length)]
         self.setCallback(self.defaultCallback)
         self.isRunning    = True
+        self.needParams   = True
 
-    def setCallback(self, callback):
-        self.callback = callback
+    def setCallback(self, callback, needParams = True):
+        self.callbackFunc = callback
+        self.needParams   = needParams
 
-    def defaultCallback(self):
-        print(self.currentAngle)
+    def runCallback(self):
+        if self.needParams:
+            self.callbackFunc(self.currentAngle)
+        else:
+            self.callbackFunc()
+
+    def defaultCallback(self, angles):
+        print(angles)
 
     def cancel(self):
         self.isRunning = False
@@ -38,8 +46,7 @@ class AnimateThread(threading.Thread):
                 self.currentAngle[i] = angle + self.diffAngle[i] * progress
                 config.joint[i].setTheta(self.currentAngle[i])
                 i += 1
-
-            self.callback()
+            self.runCallback()
             time.sleep(0.1)
 
 if __name__ == '__main__':

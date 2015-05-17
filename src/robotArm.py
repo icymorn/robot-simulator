@@ -10,9 +10,9 @@ class robotArm:
 
     def __init__(self):
         self.joint = config.joint
+        self.claw  = config.realClaw
+        self.clawRotate = config.realClawRotate
         self.hasChanged = True
-        self.updateAllTransformer()
-        self.updateAllState()
         self.animation = None
 
     def draw(self):
@@ -61,33 +61,13 @@ class robotArm:
     def getCurrentAngles(self):
         return [angle.theta for angle in self.joint]
 
-    def slowTo(self, jointAngles, callback):
+    def slowTo(self, jointAngles, callback, needParams = True):
         if self.animation is not None and self.animation.isRunning:
             self.animation.cancel()
         startAngle = self.getCurrentAngles()
         endAngle   = jointAngles
         animate    = AnimateThread(startAngle, endAngle, 3)
-        animate.setCallback(callback)
+        animate.setCallback(callback, needParams)
         animate.setDaemon(True)
-        animate.start()
         self.animation = animate
-
-    def updateAllTransformer(self):
-        self.transformer = []
-        for m in self.joint:
-            self.transformer.append(m.transform())
-            self.hasChanged = True
-
-    def updateAllState(self):
-        if not self.hasChanged:
-            return
-        currentState = None
-        self.states = []
-        for trans in self.transformer:
-            if currentState is None:
-                currentState = trans
-                self.states.append(currentState)
-            else:
-                currentState = currentState * trans
-                self.states.append(currentState)
-        self.hasChanged = False
+        animate.start()

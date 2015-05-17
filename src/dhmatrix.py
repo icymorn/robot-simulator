@@ -8,13 +8,14 @@ def toRadian(degree):
 
 class DHMatrix:
 
-    def __init__(self, theta, d, r, alpha, scale = 1, offset = 0):
+    def __init__(self, theta, d, r, alpha, scale = 1, offset = 0, bindPort = None):
         self.theta = toRadian(theta)
         self.d     = d
         self.r     = r
         self.alpha = toRadian(alpha)
         self.scale = scale
         self.offset = offset
+        self.bindPort = bindPort
 
     def matrix(self):
         return self.m

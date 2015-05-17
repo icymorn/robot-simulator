@@ -227,21 +227,18 @@ class RobotView(glcanvas.GLCanvas):
                 if len(tuple) > 1:
                     port = int(tuple[0])
                     value = float(tuple[1])
-                    print "port ", port
 
                     angles = self.object.getCurrentAngles()
                     angles[port] = value * math.pi / 180
-                    self.object.slowTo(angles, self.Refresh)
+                    self.object.slowTo(angles, self.Refresh, False)
 
             elif data.startswith('(') and data.endswith(')'):
                 tuple = data[1:-1].split(',')
                 length = len(tuple)
-                print "lenght: ", length
                 if length > 1:
                     angles = self.object.getCurrentAngles()
                     x = float(tuple[0])
                     y = float(tuple[1])
-                    print tuple
                     if length == 2:
                         r = angles[0]
                     else:
@@ -255,7 +252,7 @@ class RobotView(glcanvas.GLCanvas):
                     angles[2] = theta2
                     angles[3] = theta3
 
-                    self.object.slowTo(angles, self.Refresh)
+                    self.object.slowTo(angles, self.Refresh, False)
 
             logWin.instance.log(data)
 
