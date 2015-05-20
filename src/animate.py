@@ -47,7 +47,7 @@ class AnimateThread(threading.Thread):
                 config.joint[i].setTheta(self.currentAngle[i])
                 i += 1
             self.runCallback()
-            time.sleep(0.1)
+            time.sleep(0.2)
 
 if __name__ == '__main__':
     animate = AnimateThread([5, 10], [15, 5], 2)

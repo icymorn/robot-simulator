@@ -1,7 +1,7 @@
 # robot arm simulator
 
 robot_arm:
-  - { theta: 0, d: 0.04, r: 0, alpha: 90, transform: { scale: 1, offset: 0}, bind_port: 8}
+  - { theta: 0, d: 0.075, r: 0, alpha: 90, transform: { scale: 1, offset: 0}, bind_port: 8}
   - { theta: 45, d: 0, r: 0.1, alpha: 0, transform: { scale: -1, offset: 3.14}, bind_port: 9}
   - { theta: 45, d: 0, r: 0.1, alpha: 0, transform: { scale: 1, offset: 0}, bind_port: 10}
   - { theta: 45, d: 0, r: 0.1, alpha: 0, transform: { scale: 1, offset: 0}, bind_port: 11}
@@ -10,10 +10,10 @@ backend_server: { port: 9556 }
 
 real_robot:
   - { port: 8, start: 1350, transform: { scale: 8.889, offset: 1350, max: 2000, min: 700}}
-  - { port: 9, start: 1470, transform: { scale: 8.623, offset: 1400, max: 1600, min: 970}}
-  - { port: 10, start: 1167, transform: { scale: 8.647, offset: 1400, max: 2000, min: 1167}}
-  - { port: 11, start: 1586, transform: { scale: 8.889, offset: 1400, max: 2135, min: 1400}}
+  - { port: 9, start: 1551, transform: { scale: 8.623, offset: 650, max: 1600, min: 970}}
+  - { port: 10, start: 1151, transform: { scale: -8.647, offset: 2200, max: 2000, min: 1167}}
+  - { port: 11, start: 1490, transform: { scale: -8.889, offset: 2200, max: 2135, min: 1150}}
 
-real_claw: { port: 13, start: 1081, transform: { scale: -5.19, offset: 1600, max: 1600, min: 1081}}
+real_claw: { port: 14, start: 1081, transform: { scale: -5.19, offset: 1600, max: 1600, min: 1081}}
 
 real_claw_rotate: { port: 12, start: 1250, transform: { scale: 8.333, offset: 1250, max: 1950, min: 550}}

@@ -1,6 +1,6 @@
 import serial
-import ik
-import time
+import random
+from math import pi
 
 class Servo:
 
@@ -16,10 +16,11 @@ class Servo:
     def defaultValue(self):
         return self.getAngle(self.start)
 
-    def getCommand(self, value, time = 100):
-        return "#{0}p{1}t{2}\r\n".format(self.port, self.trans(value), time)
+    def getCommand(self, value, during = 150):
+        return "#{0}p{1}t{2}\r\n".format(self.port, self.trans(value), during)
 
     def trans(self, value):
+        value = value * 180 / pi
         newValue = int(value * self.scale + self.offset)
         if newValue > self.max:
             return self.max
@@ -40,7 +41,7 @@ class ServoServer:
         self.claw = arm.claw
         self.clawRotate = arm.clawRotate
         try:
-            self.ser = serial.Serial('COM3', 115200, timeout = 2)
+            self.ser = serial.Serial('COM4', 115200, timeout = 2)
         except Exception:
             print "Cannot establish connection to serial port, using the std instead"
             self.ser = None
@@ -50,44 +51,53 @@ class ServoServer:
         self.hand(self.claw.defaultValue())
         self.rotate(self.clawRotate.defaultValue())
 
-        angles = [joint.bindPort.defaultValue() for joint in self.arm.joint]
+        angles = [joint.bindPort.defaultValue() * pi / 180 for joint in self.arm.joint]
         for (i, angle) in enumerate(angles):
             self.arm.joint[i].theta = angle
             # print self.arm.joint[i].bindPort.getCommand(angle, 3000)
             self.sendString(self.arm.joint[i].bindPort.getCommand(angle, 3000))
-        # time.sleep(3)
+            time.sleep(1)
 
-    def _send(self, port, pos, time = 100):
+    def _send(self, port, pos, time = 150):
         if self.ser is None:
             print "#%dp%dt%d\r\n" % (port, int(pos), time)
         else:
             self.ser.write("#%dp%dt%d\r\n" % (port, int(pos), time))
 
     def open(self):
-        command = self.claw.getCommand(80, 1000)
+        command = self.claw.getCommand(100 / 180.0 * pi, 1000)
         self.sendString(command)
         time.sleep(1)
 
     def close(self):
-        command = self.claw.getCommand(10, 1000)
+        command = self.claw.getCommand(30 / 180.0 * pi, 1000)
         self.sendString(command)
         time.sleep(1)
 
     def hand(self, value):
-        command = self.claw.getCommand(value, 1000)
+        command = self.claw.getCommand(value / 180.0 * pi, 1000)
         self.sendString(command)
         time.sleep(1)
 
+    def setBaseRotate(self, value):
+        angles = self.arm.getCurrentAngles()
+        print angles
+        angles[0] = value * pi / 180
+        print angles
+        arm.slowTo(angles, self.sendAngles)
+        time.sleep(3)
+        print angles
+
     def rotate(self, value):
-        command = self.clawRotate.getCommand(value, 1000)
+        command = self.clawRotate.getCommand(value * pi / 180 , 1000)
         self.sendString(command)
         time.sleep(1)
 
     def moveTo(self, x, y, r = None):
+        import ik
         angles = self.arm.getCurrentAngles()
-        if r is None:
-            r = angles[0]
-        angles[0] = r
+        if r is not None:
+            angles[0] = r * pi / 180
         thetas = ik.ik(x, y)
         theta1 = thetas[0]
         theta2 = thetas[1]
@@ -102,10 +112,12 @@ class ServoServer:
         if self.ser is None:
             print "sending command:", command[:-2]
         else:
+            print "sending command:", command[:-2]
             self.ser.write(command)
 
     def sendAngles(self, angles):
         for (i, angle) in enumerate(angles):
+            print (i, angle)
             self.sendString(self.arm.joint[i].bindPort.getCommand(angle))
         # time.sleep(3)
 
@@ -115,17 +127,25 @@ if __name__ == '__main__':
     arm = robotArm()
     # params = {"port": 11, "start": 1000, "transform": {"scale": 1, "offset": 0, "max": 2000, "min": 1000}}
     servoServer = ServoServer(arm)
-    # servoServer.rotate(-60)
-    # angles = arm.getCurrentAngles()
-    # angles[3] = 100
-    # angles[1] = 100
-    # arm.slowTo(angles, servoServer.sendAngles, True)
-    # servoServer.open()
-    # servoServer.close()
-    # servoServer.open()
-    print "move to: 0.1, 0.1"
-    servoServer.moveTo(0.1, 0.1)
-    time.sleep(5)
+    print "move to: 0.18, 0.08"
+    print "servoServer.moveTo(0.16, 0.10)"
+    rotatelist = [-90, -45, 0, 45, 90]
+    servoServer.moveTo(0.13, 0.12)
+    i = random.randint(0, 4)
+    servoServer.rotate(rotatelist[i])
+    servoServer.open()
+    servoServer.moveTo(0.16, 0.08)
+    servoServer.close()
+    servoServer.moveTo(0.13, 0.12)
+    servoServer.open()
+    time.sleep(3)
+    # servoServer.setBaseRotate(30)
+    # time.sleep(5)
+    # print "move to: 0.1, 0.1"
+    # servoServer.moveTo(0.1, 0.1, 30)
+    print "================ reset"
+    servoServer.reset()
+    time.sleep(10)
     # servoServer.rotate(60)
     # servoServer.rotate(-30)
     # servoServer.rotate(-60)
