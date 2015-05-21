@@ -125,10 +125,7 @@ if __name__ == '__main__':
     from robotArm import robotArm
     import time
     arm = robotArm()
-    # params = {"port": 11, "start": 1000, "transform": {"scale": 1, "offset": 0, "max": 2000, "min": 1000}}
     servoServer = ServoServer(arm)
-    print "move to: 0.18, 0.08"
-    print "servoServer.moveTo(0.16, 0.10)"
     rotatelist = [-90, -45, 0, 45, 90]
     servoServer.moveTo(0.13, 0.12)
     i = random.randint(0, 4)
@@ -139,15 +136,6 @@ if __name__ == '__main__':
     servoServer.moveTo(0.13, 0.12)
     servoServer.open()
     time.sleep(3)
-    # servoServer.setBaseRotate(30)
-    # time.sleep(5)
-    # print "move to: 0.1, 0.1"
-    # servoServer.moveTo(0.1, 0.1, 30)
     print "================ reset"
     servoServer.reset()
     time.sleep(10)
-    # servoServer.rotate(60)
-    # servoServer.rotate(-30)
-    # servoServer.rotate(-60)
-    # servo = Servo(params)
-    # print servo.getCommand(50)
