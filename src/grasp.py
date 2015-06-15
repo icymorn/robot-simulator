@@ -89,6 +89,8 @@ typetext = "unknown object"
 rotate = 0
 arm_rotate_diff = 0
 
+catch_history = []
+
 while True:
     _, frame = cap.read()
     fgmask = fgbg.apply(frame)
@@ -155,7 +157,12 @@ while True:
 
             # do grasp
             # get value
+            c = raw_input("does it caught? (1 for yes, 0 for no): ")
+            if c == "0":
+                catch_history.append((typetext, arm_rotate_diff, False))
+            else:
+                catch_history.append((typetext, arm_rotate_diff, True))
+            # caught = True if random.randint(1, 10) > 8 else False
+            # print "caught: ", caught
 
-            caught = True if random.randint(1, 10) > 8 else False
-            print "caught: ", caught
-
+        print catch_history

@@ -43,11 +43,12 @@ def chart(data):
 
 def get_y(x_lines, y_rbf, input):
     for i in range(len(x_lines)):
-        if input >= x_lines[i]:
+        if input <= x_lines[i]:
             x1 = x_lines[i]
             x2 = x_lines[i + 1]
             y1 = y_rbf[i]
             y2 = y_rbf[i + 1]
+            print x1, x2, y1, y2
             return (x1 - input) * (y2 - y1) / (x2 - x1) + y1
 
 if __name__ == '__main__':
