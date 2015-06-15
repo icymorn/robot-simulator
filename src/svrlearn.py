@@ -15,46 +15,41 @@ import numpy as np
 
 
 def chart(data):
-    x_lines = [p[0] for p in data]
-    y_lines = [p[1] for p in data]
+    x_lines = np.array([[p[0]] for p in data])
+    # y_lines = np.sin(x_lines).ravel()
+    y_lines = np.array([p[1] for p in data])
 
-x_base = [x for x in range(90)]
+    from sklearn.svm import SVR
 
-X = np.sort(np.matrix(x_base), axis=0)
-y = np.sin(X).ravel()
+    svr_rbf = SVR(kernel='rbf', C=1e4, gamma=0.1)
+    # svr_lin = SVR(kernel='linear', C=1e4)
+    # svr_poly = SVR(kernel='poly', C=1e4, degree=2)
+    y_rbf = svr_rbf.fit(x_lines, y_lines).predict(x_lines)
+    # y_lin = svr_lin.fit(x_lines, y_lines).predict(x_lines)
+    # y_poly = svr_poly.fit(x_lines, y_lines).predict(x_lines)
 
-print y
-###############################################################################
-# Add noise to targets
-y[::5] += 3*(0.5 - np.random.rand(8))
+    import pylab as pl
+    pl.scatter(x_lines, y_lines, c='k', label='data')
+    pl.hold('on')
+    pl.plot(x_lines, y_rbf, c='g', label='RBF model')
+    # pl.plot(x_lines, y_lin, c='r', label='Linear model')
+    # pl.plot(x_lines, y_poly, c='b', label='Polynomial model')
+    pl.xlabel('data')
+    pl.ylabel('target')
+    pl.title('Support Vector Regression')
+    pl.legend()
+    pl.show()
+    return x_lines.ravel(), y_rbf.ravel()
 
-print y
-
-###############################################################################
-# Fit regression model
-from sklearn.svm import SVR
-
-svr_rbf = SVR(kernel='rbf', C=1e4, gamma=0.1)
-svr_lin = SVR(kernel='linear', C=1e4)
-svr_poly = SVR(kernel='poly', C=1e4, degree=2)
-y_rbf = svr_rbf.fit(X, y).predict(X)
-y_lin = svr_lin.fit(X, y).predict(X)
-y_poly = svr_poly.fit(X, y).predict(X)
-
-
-###############################################################################
-# look at the results
-import pylab as pl
-pl.scatter(X, y, c='k', label='data')
-pl.hold('on')
-pl.plot(X, y_rbf, c='g', label='RBF model')
-pl.plot(X, y_lin, c='r', label='Linear model')
-pl.plot(X, y_poly, c='b', label='Polynomial model')
-pl.xlabel('data')
-pl.ylabel('target')
-pl.title('Support Vector Regression')
-pl.legend()
-pl.show()
+def get_y(x_lines, y_rbf, input):
+    for i in range(len(x_lines)):
+        if input >= x_lines[i]:
+            x1 = x_lines[i]
+            x2 = x_lines[i + 1]
+            y1 = y_rbf[i]
+            y2 = y_rbf[i + 1]
+            return (x1 - input) * (y2 - y1) / (x2 - x1) + y1
 
 if __name__ == '__main__':
-    chart([(0, 0.1),(5, 0.15),(10,0.3),(15,0.4),(20,0.5),(25,0.65),(30,0.8),(35,0.90),(40,0.95),(45,0.97),(50,0.99),(55,0.995),(60,0.9995)])
+    x, y = chart([(0, 0.1),(5, 0.15),(10,0.3),(15,0.4),(20,0.5),(25,0.65),(30,0.8),(35,0.90),(40,0.95),(45,0.97),(50,0.99),(55,0.995),(60,0.9995)])
+    print get_y(x, y, 18)
