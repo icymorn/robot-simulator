@@ -1,6 +1,7 @@
 import serial
 import random
 from math import pi
+import time
 
 class Servo:
 
@@ -70,7 +71,7 @@ class ServoServer:
         time.sleep(1)
 
     def close(self):
-        command = self.claw.getCommand(30 / 180.0 * pi, 1000)
+        command = self.claw.getCommand(60 / 180.0 * pi, 1000)
         self.sendString(command)
         time.sleep(1)
 
@@ -105,7 +106,7 @@ class ServoServer:
         angles[1] = theta1
         angles[2] = theta2
         angles[3] = theta3
-        arm.slowTo(angles, self.sendAngles)
+        self.arm.slowTo(angles, self.sendAngles)
         time.sleep(3)
 
     def sendString(self, command):
@@ -127,15 +128,15 @@ if __name__ == '__main__':
     arm = robotArm()
     servoServer = ServoServer(arm)
     rotatelist = [-90, -45, 0, 45, 90]
-    servoServer.moveTo(0.13, 0.12)
+    servoServer.moveTo(0.16, 0.11)
     i = random.randint(0, 4)
     servoServer.rotate(rotatelist[i])
     servoServer.open()
-    servoServer.moveTo(0.16, 0.08)
+    servoServer.moveTo(0.16, 0.09)
     servoServer.close()
     servoServer.moveTo(0.13, 0.12)
     servoServer.open()
     time.sleep(3)
     print "================ reset"
     servoServer.reset()
-    time.sleep(10)
+    time.sleep(8)

@@ -5,6 +5,10 @@ import pickle
 from math import pi, fabs
 import random
 import time
+from svrlearn import chart, get_y
+from robotArm import robotArm
+from servo import ServoServer
+
 
 FLANN_INDEX_KDTREE = 1  # bug: flann enums are missing
 FLANN_INDEX_LSH    = 6
@@ -89,7 +93,14 @@ typetext = "unknown object"
 rotate = 0
 arm_rotate_diff = 0
 
-catch_history = []
+arm = robotArm()
+servoServer = ServoServer(arm)
+
+if os.path.isfile("./catch_history.data"):
+    catch_history_file = open("./catch_history.data", 'rb')
+    catch_history = pickle.load(catch_history_file)
+else:
+    catch_history = []
 
 while True:
     _, frame = cap.read()
@@ -155,8 +166,19 @@ while True:
             print "diff: ", arm_rotate_diff
             arm_rotate_diff += 10
 
-            # do grasp
-            # get value
+            # grasp
+            servoServer.moveTo(0.14, 0.12)
+            servoServer.rotate(arm_rotate)
+            servoServer.open()
+            servoServer.moveTo(0.16, 0.09)
+            servoServer.close()
+            servoServer.moveTo(0.13, 0.12)
+            servoServer.open()
+            time.sleep(3)
+            print "================ reset"
+            servoServer.reset()
+            time.sleep(5)
+
             c = raw_input("does it caught? (1 for yes, 0 for no): ")
             if c == "0":
                 catch_history.append((typetext, arm_rotate_diff, False))
@@ -164,5 +186,24 @@ while True:
                 catch_history.append((typetext, arm_rotate_diff, True))
             # caught = True if random.randint(1, 10) > 8 else False
             # print "caught: ", caught
-
+    elif k == 115:
+        print "==============="
+        pickle.dump(catch_history, open( "./catch_history.data", "wb" ) )
+        print "saved as catch_history.data file"
+    elif k == 112:
+        print "==============="
         print catch_history
+    elif k == 99:
+        print "==============="
+        print "detect: ", typetext
+        print "rotate: ", rotate
+        accept = raw_input("accpet(y/n) ?: ")
+        if accept == "y":
+            data = [[0, 0] for i in range(90)]
+            for tuple in catch_history:
+                if tuple[0] == typetext:
+                    data[tuple[1]][0] += 1
+                    if tuple[2] == True:
+                        data[tuple[1]][1] += 1
+            grasp_arr = [(index, arr[1] / arr[0]) for index, arr in enumerate(data) if arr[0] > 0]
+            chart(grasp_arr)

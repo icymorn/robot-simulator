@@ -13,6 +13,21 @@ print __doc__
 # Generate sample data
 import numpy as np
 
+def get_predict(data):
+    x_lines = np.array([[p[0]] for p in data])
+    # y_lines = np.sin(x_lines).ravel()
+    y_lines = np.array([p[1] for p in data])
+
+    from sklearn.svm import SVR
+
+    svr_rbf = SVR(kernel='rbf', C=1e4, gamma=0.1)
+    # svr_lin = SVR(kernel='linear', C=1e4)
+    # svr_poly = SVR(kernel='poly', C=1e4, degree=2)
+    y_rbf = svr_rbf.fit(x_lines, y_lines).predict(x_lines)
+    # y_lin = svr_lin.fit(x_lines, y_lines).predict(x_lines)
+    # y_poly = svr_poly.fit(x_lines, y_lines).predict(x_lines)
+    return x_lines.ravel(), y_rbf.ravel()
+
 
 def chart(data):
     x_lines = np.array([[p[0]] for p in data])
